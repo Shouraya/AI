@@ -1,0 +1,273 @@
+# BFS
+
+graph = {
+  '5' : ['3','7'],
+  '3' : ['2', '4'],
+  '7' : ['8'],
+  '2' : [],
+  '4' : ['8'],
+  '8' : []
+}
+
+
+visited = []
+queue = []
+
+def BFS(visited,graph,start,goal):
+
+  visited.append(start)
+  queue.append(start)
+
+  if start == goal:
+    print("found!!! yeah")
+    return
+  while queue:
+
+    m = queue.pop(0)
+    print(m,end = " ")
+
+    if m == goal:
+      print("found!!")
+      return
+
+    for i in graph[m]:
+      if i not in visited:
+        queue.append(i)
+        visited.append(i)
+ 
+  print("\nelement Not Present in graph")
+
+
+print("BFS is ")
+BFS(visited,graph,'5','10')
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# DFS
+
+graph = {
+  '5' : ['3','7'],
+  '3' : ['2', '4'],
+  '7' : ['8'],
+  '2' : [],
+  '4' : ['8'],
+  '8' : []
+}
+
+visited = set()
+
+
+def DFS(visited,graph,start,goal):
+
+  if start == goal:
+    return True
+
+  if start not in visited:
+    print(start,end = " ")
+    visited.add(start)
+
+    for i in graph[start]:
+      if DFS(visited,graph,i,goal):
+        return True
+
+    return False
+   
+print("DFS is ")
+DFS(visited,graph,'5','12')
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# DLS
+
+graph = {
+  '5' : ['3','7'],
+  '3' : ['2', '4'],
+  '7' : ['8'],
+  '2' : [],
+  '4' : ['8'],
+  '8' : []
+}
+
+visited = set()
+
+def DLS(visited,graph,start,goal,level):
+
+  if start == goal:
+    print(start)
+    return True
+
+  if level <= 0:
+    return False
+  if start not in visited:
+    print(start,end = " ")
+    visited.add(start)
+
+    for i in graph[start]:
+      if DLS(visited,graph,i,goal,level-1):
+        return True
+    return False
+   
+print("DLS is ")
+DLS(visited,graph,'5','2',2)
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# DFS - ID
+
+graph = {
+  '5' : ['3','7'],
+  '3' : ['2', '4'],
+  '7' : ['8'],
+  '2' : [],
+  '4' : ['8'],
+  '8' : []
+}
+
+visited = set()
+
+
+def DLS(visited,graph,start,goal,level):
+
+  if start == goal:
+    print(start)
+    return True
+
+  if level <= 0:
+    return False
+  visited.clear()
+  if start not in visited:
+    print(start,end = " ")
+    visited.add(start)
+
+    for i in graph[start]:
+      if DLS(visited,graph,i,goal,level-1):
+        return True
+    return False
+
+def DFSID(visited,graph,start,goal,level):
+  for i in range(level):
+    print('\n')
+    if DLS(visited,graph,start,goal,i+1):
+      return True
+  return False
+
+print("DFS-ID is ")
+DFSID(visited,graph,'5','89',3)
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# Best First Search
+
+def bfs(start, target, graph, queue=[], visited=[]):
+
+    if start not in visited:
+        print(start)
+        visited.append(start)
+
+    for x in graph[start]:
+        if x[0] not in visited:
+            queue.append(x)
+
+    queue.sort(key=lambda x: x[1])
+    if not queue:
+      print("soln not present")
+      count = 1
+      return
+
+    if queue[0][0] == target:
+        print(queue[0][0])
+    else:
+        processing = queue[0]
+        queue.remove(processing)
+        bfs(processing[0], target, graph, queue, visited)
+
+
+graph = {
+  'S' : [('A',4),('B',3)],
+  'A' : [('C',1)],
+  'B' : [('C',3)],
+  'C' : []
+}
+
+
+bfs('S', 'C', graph)
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# Simple Hill Climbing
+
+cost = 0
+count = 0
+def simpleHill(start, target, graph, queue=[], visited=[]):
+    global cost
+    global count 
+    if start not in visited:
+        print(start)
+        visited.append(start)
+    for x in graph[start]:
+        if x[0] not in visited:
+            queue.append(x)
+    queue.sort(key=lambda x: x[1])
+    if not queue:
+      print("no more Optimal State found")
+      count = 1
+      return
+    m = queue[0]
+    queue.clear()
+    queue.append(m)
+    cost+=queue[0][1]
+    if queue[0][0] == target:
+        print(queue[0][0])
+    else:
+        processing = queue[0]
+        queue.remove(processing)
+        simpleHill(processing[0], target, graph, queue, visited)
+
+
+
+
+graph = {
+  '5' : [('3',4),('7',12)],
+  '3' : [('2',3), ('4',6)],
+  '7' : [('8',2)],
+  '2' : [],
+  '4' : [('8',2)],
+  '8' : []
+}
+
+simpleHill('5', '2', graph)
+if count == 0:
+  print("Cost = ",cost)
+
+# ---------------------------------------------------------------------------------------------------------------------------------------
+# Uniform Cost Search
+
+from queue import Queue
+graph={
+    'S':[('A',4),('B',3)],
+    'A':[('C',1)],
+    'B':[('C',3)]
+}
+
+def path_cost(path):
+  total_cost=0
+  for(node,cost) in path:
+    total_cost+=cost
+  return total_cost,path[-1][0]
+
+def ucs(graph,start,goal):
+  visited=[]
+  queue=[[(start,0)]]
+  while queue:
+    queue.sort(key=path_cost)
+    path=queue.pop(0)
+    node=path[-1][0]
+    if node in visited:
+      continue
+    visited.append(node)
+    if node==goal:
+      return path
+    else:
+      adjacent_nodes=graph.get(node,[])
+      for (node2,cost) in adjacent_nodes:
+        new_path=path.copy()
+        new_path.append((node2,cost))
+        queue.append(new_path)
+solution=ucs(graph,'S','C')
+print("Solution is ", solution)
+print("\n PAth cost is ", path_cost(solution)[0])
